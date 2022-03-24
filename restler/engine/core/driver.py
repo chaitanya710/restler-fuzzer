@@ -790,6 +790,12 @@ def replay_sequence_from_log(replay_log_filename, token_refresh_cmd):
                     hostname = get_hostname_from_line(line)
                     if hostname is None:
                         raise Exception("Host not found in request. The replay log may be corrupted.")
+                    if ':' in hostname:
+                        # If hostname includes port, split it out
+                        host_split = hostname.split(':')
+                        hostname = host_split[0]
+                        if Settings().connection_settings.target_port is None:
+                            Settings().set_port(host_split[1])
                     Settings().set_hostname(hostname)
 
                 # Append the request data to the list
